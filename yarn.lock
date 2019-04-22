@@ -1759,6 +1759,11 @@ promise-polyfill@^6.0.2:
   resolved "http://registry.npm.taobao.org/promise-polyfill/download/promise-polyfill-6.1.0.tgz#dfa96943ea9c121fca4de9b5868cb39d3472e057"
   integrity sha1-36lpQ+qcEh/KTem1hoyznTRy4Fc=
 
+promise-polyfill@^8.1.0:
+  version "8.1.0"
+  resolved "http://registry.npm.taobao.org/promise-polyfill/download/promise-polyfill-8.1.0.tgz#30059da54d1358ce905ac581f287e184aedf995d"
+  integrity sha1-MAWdpU0TWM6QWsWB8ofhhK7fmV0=
+
 promise@^7.1.1:
   version "7.3.1"
   resolved "http://registry.npm.taobao.org/promise/download/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
@@ -2258,7 +2263,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-wepy-async-function@^1.4.4:
+wepy-async-function@^1.4.7:
   version "1.4.7"
   resolved "http://registry.npm.taobao.org/wepy-async-function/download/wepy-async-function-1.4.7.tgz#f783164306e175d9a7c2656a33532e619c8eae16"
   integrity sha1-94MWQwbhddmnwmVqM1MuYZyOrhY=
@@ -2299,6 +2304,11 @@ wepy@^1.7.2:
   version "1.7.2"
   resolved "http://registry.npm.taobao.org/wepy/download/wepy-1.7.2.tgz#679052401f2b1f4818644bc44f88b72975491a64"
   integrity sha1-Z5BSQB8rH0gYZEvET4i3KXVJGmQ=
+
+weui-wxss@^1.1.1:
+  version "1.1.1"
+  resolved "http://registry.npm.taobao.org/weui-wxss/download/weui-wxss-1.1.1.tgz#9e52edb406d88e24cc2eb7a186ea7120dd6ff104"
+  integrity sha1-nlLttAbYjiTMLrehhupxIN1v8QQ=
 
 which@^1.2.9:
   version "1.3.1"

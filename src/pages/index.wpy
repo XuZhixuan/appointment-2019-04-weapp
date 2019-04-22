@@ -1,13 +1,20 @@
 <style>
 </style>
 <template>
-  <view class="container">
+  <view class="page__bd page__bd_spacing">
     首页
+    <button class="weui-btn" type="primary" @tap="login">登录</button>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import api from '@/utils/api.js'
 
-  export default class Index extends wepy.page {}
+  export default class Index extends wepy.page {
+    async login() {
+      let res = await api.login()
+      console.log(res)
+    }
+  }
 </script>

@@ -1,5 +1,5 @@
 <style lang="less">
-@import 'style/weui.less';
+@import './style/weui.less';
 page {
   background-color: #F8F8F8;
   font-size: 16px;
@@ -39,6 +39,7 @@ page {
 
 <script>
 import wepy from 'wepy'
+import 'wepy-async-function'
 
 export default class extends wepy.app {
   config = {
@@ -72,6 +73,7 @@ export default class extends wepy.app {
   constructor () {
     super()
     this.use('requestfix')
+    this.use('promisify')
   }
 
   onLaunch() {
