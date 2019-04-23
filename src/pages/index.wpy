@@ -3,7 +3,12 @@
 <template>
   <view class="page__bd page__bd_spacing">
     首页
-    <button class="weui-btn" type="primary" @tap="login">登录</button>
+    <block wx:if="{{!logged}}">
+      <button class="weui-btn" type="primary" @tap="login" open-type="getUserInfo">登录</button>
+    </block>
+    <block wx:if="{{logged}}">
+      <button class="weui-btn" type="primary">取号</button>
+    </block>
   </view>
 </template>
 
@@ -12,9 +17,16 @@
   import api from '@/utils/api.js'
 
   export default class Index extends wepy.page {
+    data = {
+      logged: false
+    }
+
     async login() {
       let res = await api.login()
-      console.log(res)
+
+      this.setData({
+        logged: res.statusCode === 201
+      })
     }
   }
 </script>

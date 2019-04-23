@@ -1,6 +1,6 @@
 import wepy from 'wepy'
 
-const host = 'https://appointment.eeyes.xyz/api'
+const host = 'https://app0.eeyes.xyz/api'
 
 const request = async (options, showLoading = true) => {
   if (typeof options === 'string') {
@@ -41,15 +41,17 @@ const login = async (params = {}) => {
     method: 'POST'
   })
 
+  console.log(authResponse)
+
   if (authResponse.statusCode === 201) {
     wepy.setStorageSync('access_token', authResponse.data.access_token)
-    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + authResponse.data.expires_in * 1000)
+    wepy.setStorageSync('access_token_expires_at', new Date().getTime() + authResponse.data.expires_at * 1000)
   }
 
   return authResponse
 }
 
-const refresh = async (params = {}) => {
+const refreshToken = async (params = {}) => {
   let accessToken = wepy.getStorageSync('access_token')
 
   let refreshResponse = await request({
@@ -62,14 +64,56 @@ const refresh = async (params = {}) => {
 
   if (refreshResponse.statusCode === 200) {
     wepy.setStorageSync('access_token', refreshResponse.data.access_token)
-    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + refreshResponse.data.expires_in * 1000)
+    wepy.setStorageSync('access_token_expires_at', new Date().getTime() + refreshResponse.data.expires_in * 1000)
   }
 
   return refreshResponse
 }
 
+const getToken = async (options) => {
+  // 从缓存中取出 Token
+  let accessToken = wepy.getStorageSync('access_token')
+  let expiredAt = wepy.getStorageSync('access_token_expires_at')
+
+  // 如果 token 过期了，则调用刷新方法
+  if (accessToken && new Date().getTime() > expiredAt) {
+    let refreshResponse = await refreshToken(accessToken)
+
+    // 刷新成功
+    if (refreshResponse.statusCode === 200) {
+      accessToken = refreshResponse.data.access_token
+    } else {
+      // 刷新失败了，重新调用登录方法，设置 Token
+      let authResponse = await login()
+      if (authResponse.statusCode === 201) {
+        accessToken = authResponse.data.access_token
+      }
+    }
+  }
+
+  return accessToken
+}
+
+const authRequest = async (options, showLoading = true) => {
+  if (typeof options === 'string') {
+    options = {
+      url: options
+    }
+  }
+  // 获取Token
+  let accessToken = await getToken()
+
+  // 将 Token 设置在 header 中
+  let header = options.header || {}
+  header.Authorization = 'Bearer ' + accessToken
+  options.header = header
+
+  return request(options, showLoading)
+}
+
 export default {
   request,
   login,
-  refresh
+  refreshToken,
+  authRequest
 }
