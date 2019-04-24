@@ -1,0 +1,39 @@
+<style>
+</style>
+<template>
+<view class="page">
+  <view class="page__hd">
+    <view class="page__title">{{ broadcast.title }}</view>
+    <view class="page__desc">{{ broadcast.created_at }}</view>
+  </view>
+  <view class="page__bd">
+    <view class="weui-article">
+      <view class="weui-artivle__p">
+        {{ broadcast.body }}
+      </view>
+    </view>
+  </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import api from '@/utils/api.js'
+
+export default class Show extends wepy.page {
+  data = {
+    broadcast: null
+  }
+
+  async getBroadcast(id) {
+    let res = await api.request('broadcasts/' + id)
+    if (res.statusCode === 200) {
+      this.broadcast = res.data
+      this.$apply()
+    }
+  }
+
+  onLoad(options) {
+    this.getBroadcast(options.id)
+  }
+}
+</script>

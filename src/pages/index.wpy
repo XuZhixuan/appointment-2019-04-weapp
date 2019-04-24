@@ -1,14 +1,98 @@
 <style>
+.userinfo {
+  top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userinfo-avatar {
+  width: 128rpx;
+  height: 128rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+
+.userinfo-nickname {
+  color: #AAAAAA;
+}
+
+.number {
+  margin: 5px;
+  padding: 0 10px;
+  text-align: center;
+  background-color: #EBEBEB;
+  height: 2.3em;
+  line-height: 2.3em;
+}
+
+.bottons {
+  width: 90%;
+  bottom: 50rpx;
+  position: fixed;
+}
+
+.status {
+  position: relative;
+  margin-top: 80rpx;
+}
 </style>
 <template>
   <view class="page__bd page__bd_spacing">
-    首页
-    <block wx:if="{{!logged}}">
-      <button class="weui-btn" type="primary" @tap="login" open-type="getUserInfo">登录</button>
-    </block>
-    <block wx:if="{{logged}}">
-      <button class="weui-btn" type="primary">取号</button>
-    </block>
+    <view class="userinfo">
+      <image src="{{ userInfo.avatarUrl }}" class="userinfo-avatar"></image>
+      <text class="userinfo-nickname">{{ userInfo.nickName }}</text>
+    </view>
+    <view class="status">
+      <view class="weui-flex">
+      <view class="weui-flex__item">
+        <view class="number" wx:if="{{ queuing }}">
+          队列中
+        </view>
+        <view class="number" wx:else>
+          未取号
+        </view>
+      </view>
+    </view>
+    <view class="weui-flex">
+      <view class="weui-flex__item">
+        <view class="number">
+          我的号码
+        </view>
+      </view>
+      <view class="weui-flex__item">
+        <view class="number">
+          当前位置
+        </view>
+      </view>
+    </view>
+    <view class="weui-flex">
+      <view class="weui-flex__item">
+        <view class="number">
+          <block wx:if="{{ queuing }}">{{ queue }}</block>
+          <block wx:else> - - -</block>
+        </view>
+      </view>
+      <view class="weui-flex__item">
+        <view class="number">
+          <block wx:if="{{ queuing }}">{{ last }}</block>
+          <block wx:else> - - -</block>
+        </view>
+      </view>
+    </view>
+    </view>
+    <view class="bottons">
+      <block wx:if="{{ !loggedIn }}">
+        <button class="weui-btn" type="primary" @tap="login" open-type="getUserInfo">登录并获取信息</button>
+      </block>
+      <block wx:if="{{ loggedIn }}">
+        <button wx:if="{{ !queuing }}" class="weui-btn" type="primary" @tap="takeQueue">取号</button>
+        <block wx:else>
+          <button class="weui-btn" type="primary" @tap="refreshQueue">刷新</button>
+          <button class="weui-btn" type="warn" @tap="cancleQueue">取消</button>
+        </block>
+      </block>
+    </view>
   </view>
 </template>
 
@@ -17,16 +101,85 @@
   import api from '@/utils/api.js'
 
   export default class Index extends wepy.page {
-    data = {
-      logged: false
+    config = {
+      navigationBarTitleText: '预约取号'
     }
 
-    async login() {
-      let res = await api.login()
+    data = {
+      loggedIn: false,
+      queuing: false,
+      queue: null,
+      last: null,
+      userInfo: null
+    }
 
-      this.setData({
-        logged: res.statusCode === 201
-      })
+    watch = {
+      queue: function () {
+        if (this.queue & this.last) {
+          this.queuing = true
+        } else {
+          this.queuing = false
+        }
+
+        this.$apply()
+      }
+    }
+
+    async onShow() {
+      let accessToken = wepy.getStorageSync('access_token')
+
+      if (accessToken) {
+        this.loggedIn = true
+        this.$apply()
+      }
+    }
+
+    methods = {
+      async login() {
+        await api.login()
+        this.onShow()
+
+        let userInfo = await wepy.getUserInfo()
+        this.userInfo = userInfo.userInfo
+        this.$apply()
+      },
+
+      async takeQueue() {
+        let res = await api.authRequest('queue')
+        if (res.statusCode === 201) {
+          this.queue = res.data.queue
+          this.last = res.data.last
+          this.$apply()
+        } else {
+          let res = await api.authRequest('queue/current')
+          if (res.statusCode === 200) {
+            this.queue = res.data.queue
+            this.last = res.data.last
+            this.$apply()
+          }
+        }
+      },
+
+      async refreshQueue() {
+        let res = await api.authRequest('queue/current')
+        if (res.statusCode === 200) {
+          this.queue = res.data.queue
+          this.last = res.data.last
+          this.$apply()
+        }
+      },
+
+      async cancleQueue() {
+        let res = await api.authRequest({
+          'url': 'queue/current',
+          'method': 'DELETE'
+        })
+        if (res.statusCode === 204) {
+          this.queue = null
+          this.last = null
+          this.$apply()
+        }
+      }
     }
   }
 </script>

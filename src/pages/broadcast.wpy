@@ -1,0 +1,49 @@
+<style>
+</style>
+<template>
+  <view class="container">
+    <view class="weui-cells__title">所有通知</view>
+    <view class="weui-cells__title weui-cells_after-title">
+      <repeat for="{{ broadcasts }}" item="item">
+        <navigator url="/pages/show?id={{ item.id }}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__bd">{{ item.title }}</view>
+          <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </navigator>
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import api from '@/utils/api.js'
+
+  export default class Broadcase extends wepy.page {
+    config = {
+      enablePullDownRefresh: true,
+      navigationBarTitleText: '事务通知'
+    }
+
+    data = {
+      broadcasts: null
+    }
+
+    async onShow() {
+      let res = await api.request('broadcasts')
+      if (res.statusCode === 200) {
+        this.broadcasts = res.data
+        this.$apply()
+      }
+    }
+
+    async onPullDownRefresh() {
+      this.noMoreData = false
+      let res = await api.request('broadcasts')
+      if (res.statusCode === 200) {
+        this.broadcasts = res.data
+        this.$apply()
+      }
+      wepy.stopPullDownRefresh()
+    }
+  }
+</script>

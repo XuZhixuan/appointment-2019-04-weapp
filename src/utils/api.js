@@ -41,8 +41,6 @@ const login = async (params = {}) => {
     method: 'POST'
   })
 
-  console.log(authResponse)
-
   if (authResponse.statusCode === 201) {
     wepy.setStorageSync('access_token', authResponse.data.access_token)
     wepy.setStorageSync('access_token_expires_at', new Date().getTime() + authResponse.data.expires_at * 1000)

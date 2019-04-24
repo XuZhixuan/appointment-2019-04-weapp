@@ -45,7 +45,8 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
-      'pages/user'
+      'pages/broadcast',
+      'pages/show'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -56,14 +57,14 @@ export default class extends wepy.app {
     tabBar: {
       list: [{
         pagePath: 'pages/index',
-        text: '首页',
+        text: '预约排号',
         iconPath: 'images/index.png',
         selectedIconPath: 'images/index_selected.png'
       }, {
-        pagePath: 'pages/user',
-        text: '我的',
-        iconPath: 'images/user.png',
-        selectedIconPath: 'images/user_selected.png'
+        pagePath: 'pages/broadcast',
+        text: '事务通知',
+        iconPath: 'images/broadcast.png',
+        selectedIconPath: 'images/broadcast_selected.png'
       }],
       color: '#707070',
       selectedColor: '#00b5ad'
