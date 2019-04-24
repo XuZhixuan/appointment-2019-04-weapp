@@ -115,7 +115,7 @@
 
     watch = {
       queue: function () {
-        if (this.queue & this.last) {
+        if (this.queue != null & this.last != null) {
           this.queuing = true
         } else {
           this.queuing = false
@@ -130,6 +130,17 @@
 
       if (accessToken) {
         this.loggedIn = true
+        let userInfo = await wepy.getUserInfo()
+        this.userInfo = userInfo.userInfo
+        this.$apply()
+      }
+    }
+
+    async onLoad() {
+      let can = await wepy.canIUse('getUserInfo')
+      if (can) {
+        let userInfo = await wepy.getUserInfo()
+        this.userInfo = userInfo.userInfo
         this.$apply()
       }
     }
@@ -165,6 +176,14 @@
         if (res.statusCode === 200) {
           this.queue = res.data.queue
           this.last = res.data.last
+          this.$apply()
+        } else {
+          wepy.showModal({
+            'title': '刷新失败',
+            'content': '请联系管理员或重新取号'
+          })
+          this.queue = null
+          this.last = null
           this.$apply()
         }
       },
